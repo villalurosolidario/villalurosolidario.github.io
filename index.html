@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+    <head></head>
+    <body>
+        <button id="btn-login">Login with Facebook</button>
+        <script type="text/javascript">
+            (function () {
+                loadFacebookSDK(document, 'script', 'facebook-jssdk');
+
+                var btnLogin = document.getElementById('btn-login');
+                btnLogin.addEventListener("click", onBtnLoginClick);
+
+                function onBtnLoginClick() {
+                    FB.getLoginStatus(function (response) {
+                        if (response.status === 'connected') {
+                            console.log('Logged in.');
+                        } else {
+                            FB.login();
+                        }
+                    });
+                }
+
+                function loadFacebookSDK(d, s, id) {
+                    window.fbAsyncInit = function () {
+                        FB.init({
+                            appId: '141430659599838',
+                            xfbml: true,
+                            version: 'v2.5'
+                        });
+                    };
+
+                    var js, fjs = d.getElementsByTagName(s)[0];
+                    if (d.getElementById(id)) {
+                        return;
+                    }
+                    js = d.createElement(s);
+                    js.id = id;
+                    js.src = "//connect.facebook.net/en_US/sdk.js";
+                    fjs.parentNode.insertBefore(js, fjs);
+                }
+            })();
+        </script>
+    </body>
+</html>
