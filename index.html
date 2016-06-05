@@ -2,21 +2,92 @@
 <html>
     <head></head>
     <body>
-        <button id="btn-login">Login with Facebook</button>
+        <button id="btn-login" style="display: none">Login with Facebook</button>
+        <button id="btn-share" style="display: none">Share picture</button>
+        <img id="img-profile"/>
+
+        <script type="text/javascript" src="/vendor/jquery.min.js"></script>
+        <script type="text/javascript" src="/vendor/jquery.cloudinary.js"></script>
         <script type="text/javascript">
             (function () {
-                loadFacebookSDK(document, 'script', 'facebook-jssdk');
+                init();
 
-                var btnLogin = document.getElementById('btn-login');
-                btnLogin.addEventListener("click", onBtnLoginClick);
+                var $btnLogin = $('#btn-login');
+                var $btnShare = $('#btn-share');
+                var $imgProfile = $('#img-profile');
+
+                $btnLogin.click(onBtnLoginClick);
+                $btnShare.click(onBtnShareClick);
+
+                function onReady() {
+                    FB.getLoginStatus(function (response) {
+                        if (response.status !== 'connected') {
+                            $btnLogin.show();
+                            return;
+                        }
+
+                        getProfilePicture(response.authResponse.userID);
+                    });
+                }
 
                 function onBtnLoginClick() {
                     FB.getLoginStatus(function (response) {
                         if (response.status === 'connected') {
-                            console.log('Logged in.');
-                        } else {
-                            FB.login();
+                            getProfilePicture(response.authResponse.userID);
+                            return;
                         }
+
+                        FB.login(function (response) {
+                            if (response.status === 'connected') {
+                                getProfilePicture(response.authResponse.userID);
+                            }
+                        }, {
+                            scope: 'publish_actions'
+                        });
+                    });
+                }
+
+                function getProfilePicture(userID) {
+                    var result = $.cloudinary.facebook_profile_image(userID + '.jpg', {
+                        width: 300,
+                        height: 300,
+                        crop: 'fill',
+                        gravity: 'face',
+                        radius: 'max'
+                    });
+
+                    if (result.length !== 1) return;
+
+                    $imgProfile.attr('src', result[0].src);
+                    $btnShare.show();
+                }
+
+                function onBtnShareClick() {
+                    var url = $imgProfile.attr('src');
+                    if (!url || url.length === 0) return;
+
+                    FB.api(
+                        '/me/photos',
+                        'POST', {
+                            'url': url
+                        },
+                        function (response) {
+                            if (response && !response.error) {
+                                // TODO: make profile picture
+                            }
+                        }
+                    );
+                }
+
+                function init() {
+                    loadFacebookSDK(document, 'script', 'facebook-jssdk');
+                    configCloudinary();
+                }
+
+                function configCloudinary() {
+                    $.cloudinary.config({
+                        cloud_name: 'ivancevich',
+                        api_key: '673171549215526'
                     });
                 }
 
@@ -27,6 +98,8 @@
                             xfbml: true,
                             version: 'v2.5'
                         });
+
+                        onReady();
                     };
 
                     var js, fjs = d.getElementsByTagName(s)[0];
