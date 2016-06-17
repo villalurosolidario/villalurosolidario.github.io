@@ -99,11 +99,10 @@
 
                 function getProfilePicture(userID) {
                     var result = $.cloudinary.facebook_profile_image(userID + '.jpg', {
-                        width: 300,
-                        height: 300,
-                        crop: 'fill',
-                        gravity: 'face',
-                        radius: 'max'
+                        transformation: [
+                            {height: 800, width: 800, crop: 'scale'},
+                            {gravity: 'center', height: 800, overlay: 'vls_2', width: 800, crop: 'fill'}
+                        ]
                     });
 
                     if (result.length !== 1) return;
@@ -122,7 +121,7 @@
                         },
                         function (response) {
                             if (response && !response.error) {
-                                // TODO: make profile picture
+                                window.location.href = 'https://www.facebook.com/photo.php?fbid=' + response.id;
                             }
                         }
                     );
