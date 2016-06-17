@@ -2,9 +2,49 @@
 <html>
     <head></head>
     <body>
-        <button id="btn-login" style="display: none">Login with Facebook</button>
-        <button id="btn-share" style="display: none">Share picture</button>
-        <img id="img-profile"/>
+        <style type="text/css">
+            body {
+                margin: 0;
+                background: #000;
+            }
+
+            .container {
+                width: 800px;
+                height: 600px;
+                margin-left: auto;
+                margin-right: auto;
+                display: block;
+            }
+
+            #img-profile {
+                position: relative;
+                top: -273px;
+                left: 612px;
+            }
+
+            #btn-login {
+                width: 160px;
+                height: 30px;
+                position: relative;
+                top: -254px;
+                left: 448px;
+            }
+
+            #btn-share {
+                width: 95px;
+                height: 50px;
+                position: relative;
+                top: -207px;
+                left: 317px;
+            }
+        </style>
+
+        <div class="container">
+            <img src="/assets/back.svg" width="800" height="600" />
+            <img id="img-profile" width="160" height="160" />
+            <button id="btn-login">Login with Facebook</button>
+            <button id="btn-share">Share picture</button>
+        </div>
 
         <script type="text/javascript" src="/vendor/jquery.min.js"></script>
         <script type="text/javascript" src="/vendor/jquery.cloudinary.js"></script>
