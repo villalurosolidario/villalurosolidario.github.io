@@ -48,6 +48,21 @@
                 bottom: 22px;
                 right: 60px;
             }
+
+            #btn-mask-1, #btn-mask-2 {
+                position: absolute;
+                width: 36px;
+                height: 36px;
+                right: 235px;
+            }
+
+            #btn-mask-1 {
+                bottom: 190px;
+            }
+
+            #btn-mask-2 {
+                bottom: 125px;
+            }
         </style>
 
         <div class="container">
@@ -55,6 +70,8 @@
             <img id="img-profile" width="160" height="160" />
             <button id="btn-login" class="btn-transparent"></button>
             <button id="btn-share" class="btn-transparent"></button>
+            <button id="btn-mask-1" data-mask="vls_1" class="btn-transparent"></button>
+            <button id="btn-mask-2" data-mask="vls_2" class="btn-transparent"></button>
         </div>
 
         <script type="text/javascript" src="/vendor/jquery.min.js"></script>
@@ -65,10 +82,15 @@
 
                 var $btnLogin = $('#btn-login');
                 var $btnShare = $('#btn-share');
+                var $btnMask = $('#btn-mask-1, #btn-mask-2');
                 var $imgProfile = $('#img-profile');
 
                 $btnLogin.click(onBtnLoginClick);
                 $btnShare.click(onBtnShareClick);
+                $btnMask.click(onBtnMaskClick);
+
+                var _userID = null;
+                var _selectedMask = $btnMask.first().data('mask');
 
                 function onReady() {
                     FB.getLoginStatus(function (response) {
@@ -76,20 +98,23 @@
                             return;
                         }
 
-                        getProfilePicture(response.authResponse.userID);
+                        _userID = response.authResponse.userID;
+                        getProfilePicture();
                     });
                 }
 
                 function onBtnLoginClick() {
                     FB.getLoginStatus(function (response) {
                         if (response.status === 'connected') {
-                            getProfilePicture(response.authResponse.userID);
+                            _userID = response.authResponse.userID;
+                            getProfilePicture();
                             return;
                         }
 
                         FB.login(function (response) {
                             if (response.status === 'connected') {
-                                getProfilePicture(response.authResponse.userID);
+                                _userID = response.authResponse.userID;
+                                getProfilePicture();
                             }
                         }, {
                             scope: 'publish_actions'
@@ -97,11 +122,15 @@
                     });
                 }
 
-                function getProfilePicture(userID) {
-                    var result = $.cloudinary.facebook_profile_image(userID + '.jpg', {
+                function getProfilePicture() {
+                    if (_userID != null) {
+                        return;
+                    }
+
+                    var result = $.cloudinary.facebook_profile_image(_userID + '.jpg', {
                         transformation: [
                             {height: 800, width: 800, crop: 'scale'},
-                            {gravity: 'center', height: 800, overlay: 'vls_2', width: 800, crop: 'fill'}
+                            {gravity: 'center', height: 800, overlay: _selectedMask, width: 800, crop: 'fill'}
                         ]
                     });
 
@@ -125,6 +154,11 @@
                             }
                         }
                     );
+                }
+
+                function onBtnMaskClick() {
+                    _selectedMask = $(this).data('mask');
+                    getProfilePicture();
                 }
 
                 function init() {
