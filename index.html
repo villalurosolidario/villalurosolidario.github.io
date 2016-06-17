@@ -14,6 +14,17 @@
                 margin-left: auto;
                 margin-right: auto;
                 display: block;
+                position: relative;
+            }
+
+            .btn-transparent {
+                background-color: transparent;
+                background-repeat: no-repeat;
+                border: none;
+                cursor: pointer;
+                overflow: hidden;
+                outline: none;
+                /*display: block;*/
             }
 
             #img-profile {
@@ -25,25 +36,25 @@
             #btn-login {
                 width: 160px;
                 height: 30px;
-                position: relative;
-                top: -254px;
-                left: 448px;
+                position: absolute;
+                bottom: 79px;
+                right: 28px;
             }
 
             #btn-share {
                 width: 95px;
                 height: 50px;
-                position: relative;
-                top: -207px;
-                left: 317px;
+                position: absolute;
+                bottom: 22px;
+                right: 60px;
             }
         </style>
 
         <div class="container">
             <img src="/assets/back.svg" width="800" height="600" />
             <img id="img-profile" width="160" height="160" />
-            <button id="btn-login">Login with Facebook</button>
-            <button id="btn-share">Share picture</button>
+            <button id="btn-login" class="btn-transparent"></button>
+            <button id="btn-share" class="btn-transparent"></button>
         </div>
 
         <script type="text/javascript" src="/vendor/jquery.min.js"></script>
@@ -62,7 +73,6 @@
                 function onReady() {
                     FB.getLoginStatus(function (response) {
                         if (response.status !== 'connected') {
-                            $btnLogin.show();
                             return;
                         }
 
@@ -79,7 +89,6 @@
 
                         FB.login(function (response) {
                             if (response.status === 'connected') {
-                                $btnLogin.hide();
                                 getProfilePicture(response.authResponse.userID);
                             }
                         }, {
@@ -100,7 +109,6 @@
                     if (result.length !== 1) return;
 
                     $imgProfile.attr('src', result[0].src);
-                    $btnShare.show();
                 }
 
                 function onBtnShareClick() {
